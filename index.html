@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Circle Terms Drag and Drop</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+
+    .container {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+
+    .term, .dropzone {
+      border: 2px solid #ccc;
+      border-radius: 8px;
+      padding: 10px;
+      width: 200px;
+      margin: 10px;
+      text-align: center;
+      cursor: grab;
+    }
+
+    .term {
+      background-color: #f0f8ff;
+    }
+
+    .dropzone {
+      background-color: #fdfdfd;
+      min-height: 60px;
+    }
+
+    .dropzone.highlight {
+      border-color: #4caf50;
+      background-color: #e8f5e9;
+    }
+
+    #feedback {
+      margin-top: 20px;
+      font-weight: bold;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 8px 16px;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Match the Circle Terms</h2>
+
+  <div class="container">
+    <!-- Terms -->
+    <div class="term" draggable="true" id="centreText">Centre</div>
+    <div class="term" draggable="true" id="radiusText">Radius</div>
+    <div class="term" draggable="true" id="diameterText">Diameter</div>
+    <div class="term" draggable="true" id="chordText">Chord</div>
+    <div class="term" draggable="true" id="arcText">Arc</div>
+    <div class="term" draggable="true" id="sectorText">Sector</div>
+    <div class="term" draggable="true" id="segmentText">Segment</div>
+  </div>
+
+  <h3>Drop into the correct definition:</h3>
+  <div class="container">
+    <!-- Drop zones -->
+    <div class="dropzone" data-term="centreText">The exact middle point of a circle.</div>
+    <div class="dropzone" data-term="radiusText">A straight line from the centre to the edge of the circle.</div>
+    <div class="dropzone" data-term="diameterText">A straight line that is twice the radius.</div>
+    <div class="dropzone" data-term="chordText">A straight line connecting two points on the circle, but not passing through the centre.</div>
+    <div class="dropzone" data-term="arcText">A curved part of the circle's circumference.</div>
+    <div class="dropzone" data-term="sectorText">A ‘pizza slice’ shaped area enclosed by two radii and the arc between them.</div>
+    <div class="dropzone" data-term="segmentText">The area between a chord and the arc above it.</div>
+  </div>
+
+  <div id="feedback"></div>
+
+  <button onclick="reset()">Reset</button>
+
+  <script>
+    const terms = document.querySelectorAll('.term');
+    const zones = document.querySelectorAll('.dropzone');
+    const feedback = document.getElementById('feedback');
+    let draggedItem = null;
+
+    terms.forEach(term => {
+      term.addEventListener('dragstart', () => {
+        draggedItem = term;
+        setTimeout(() => term.style.display = 'none', 0);
+      });
+
+      term.addEventListener('dragend', () => {
+        setTimeout(() => {
+          term.style.display = 'block';
+          draggedItem = null;
+        }, 0);
+      });
+    });
+
+    zones.forEach(zone => {
+      zone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        zone.classList.add('highlight');
+      });
+
+      zone.addEventListener('dragleave', () => {
+        zone.classList.remove('highlight');
+      });
+
+      zone.addEventListener('drop', () => {
+        zone.classList.remove('highlight');
+
+        if (draggedItem && draggedItem.id === zone.dataset.term) {
+          zone.textContent = `${draggedItem.textContent} - ${zone.textContent}`;
+          zone.style.backgroundColor = '#d0f0c0';
+          feedback.textContent = `Correct! ${draggedItem.textContent} matched.`;
+          feedback.style.color = 'green';
+          draggedItem.remove(); // Remove the term once correctly placed
+        } else {
+          feedback.textContent = `Incorrect. Try again.`;
+          feedback.style.color = 'red';
+        }
+      });
+    });
+
+    function reset() {
+      location.reload();
+    }
+  </script>
+</body>
+</html>
